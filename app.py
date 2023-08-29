@@ -125,13 +125,34 @@ def saveMapa():
 
 @app.route('/save_map', methods=['POST'])
 def save_map():
+
     filename = request.form['filename']
     if not filename.endswith('.html'):
         filename += '.html'
     
     cordenadasIniciais = (latitude_inicial, longitude_inicial)
-    estilo_inicial = 'CartoDB positron'
     m = folium.Map(location=cordenadasIniciais, zoom_start=12, tiles=estilo_inicial)
+
+    for camada in vetCamadas:
+        if camada.tipo == 1: #TEXTO
+            print(camada.tipo)
+
+
+
+        if camada.tipo == 2: #MARCADOR
+            marker_group = folium.FeatureGroup(name=camada.nome, show=False)
+            for index, row in (camada.dfx).iterrows():
+                nome = row[camada.xNome]
+                lat = row[camada.ylat]
+                lon = row[camada.zlon]
+                popup_text = f"{nome}"
+                folium.Marker(location=((lat+.001), (lon-.002)), popup=popup_text).add_to(marker_group)
+
+            marker_group.add_to(m)
+
+
+
+
     
     # Definir o nome do arquivo temporário
     arquivo_temporario = f'{filename}'
