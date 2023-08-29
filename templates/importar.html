@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Importar CSV</title>
+</head>
+<body>
+    <h1>Importar CSV</h1>
+
+    <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+        <label for="mainColumn">Nome Coluna Principal:</label>
+        <input type="text" name="mainColumn" id="mainColumn" required><br>
+    
+        <label for="latitudeColumn">Nome Coluna Latitude:</label>
+        <input type="text" name="latitudeColumn" id="latitudeColumn" required><br>
+    
+        <label for="longitudeColumn">Nome Coluna Longitude:</label>
+        <input type="text" name="longitudeColumn" id="longitudeColumn" required><br>
+    
+        <label for="opcSelect">Tipo:</label>
+        <select name="opcSelect" id="opcSelect" required>
+            <option value="1">Texto</option>
+            <option value="2">Marcador</option>
+        </select><br>
+    
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <button type="submit" name="submit">Upload e Copiar</button>
+    </form>
+
+    <form action="{{ url_for('camadas') }}" method="get">
+        <button type="submit">Voltar</button>
+    </form>
+    
+
+    <div id="confirmation" style="display: none;">
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function showConfirmation() {
+            var confirmationBox = document.getElementById('confirmation');
+            confirmationBox.style.display = 'block';
+            return confirm('Arquivo enviado com sucesso!');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camada</title>
+</head>
+<body>
+    <h1>Lista de Camadas</h1>
+    <ul>
+        {% for camada in vetCamadas %}
+            <li>
+                <a href="{{ url_for('mostrar_camada', camada_nome=camada.nome) }}">{{ camada.nome }}</a><br>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <form action="{{ url_for('importarCsv') }}" method="get">
+        <button type="submit">Importar CSV</button>
+    </form>
+
+    <form action="{{ url_for('limpar_dados') }}" method="get">
+        <button type="submit">Limpar Dados</button>
+    </form>
+    
+
+    <form action="{{ url_for('home') }}" method="get">
+        <button type="submit">Voltar</button>
+    </form>
+</body>
+</html>
+
