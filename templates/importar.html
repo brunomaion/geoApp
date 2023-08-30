@@ -7,19 +7,28 @@
     <h1>Importar CSV</h1>
 
     <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
-        <label for="mainColumn">Nome Coluna Principal:</label>
+        <label for="nomeCamada">Nome Camada:</label>
+        <input type="text" name="nomeCamada" id="nomeCamada" required><br>
+        
+        <label for="mainColumn">Coluna Principal:</label>
         <input type="text" name="mainColumn" id="mainColumn" required><br>
     
-        <label for="latitudeColumn">Nome Coluna Latitude:</label>
+        <label for="latitudeColumn">Coluna Latitude:</label>
         <input type="text" name="latitudeColumn" id="latitudeColumn" required><br>
     
-        <label for="longitudeColumn">Nome Coluna Longitude:</label>
+        <label for="longitudeColumn">Coluna Longitude:</label>
         <input type="text" name="longitudeColumn" id="longitudeColumn" required><br>
     
         <label for="opcSelect">Tipo:</label>
         <select name="opcSelect" id="opcSelect" required>
-            <option value="1">Texto</option>
-            <option value="2">Marcador</option>
+            <option value="Texto">Texto</option>
+            <option value="Marcador">Marcador</option>
+        </select><br>
+
+        <label for="opcSep">Separação CSV:</label>
+        <select name="opcSep" id="opcSep" required>
+            <option value=";">;</option>
+            <option value=",">,</option>
         </select><br>
     
         <input type="file" name="fileToUpload" id="fileToUpload">

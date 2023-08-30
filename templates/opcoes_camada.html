@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalhes da Camada</title>
+</head>
+<body>
+    <h1>Detalhes da Camada</h1>
+    <h2>Nome: {{ camada.nome }}</h2>
+    <h2>Tipo: {{ camada.tipo }}</h2>
+
+    <h3>Colunas:</h3>
+    <p>Principal: {{ camada.xNome }}</p>
+    <p>Latitude: {{ camada.yLat }}</p>
+    <p>Longitude: {{ camada.zLong }}</p>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                {% for column in camada.dfx.columns %}
+                <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in camada.dfx.iterrows() %}
+            <tr>
+                {% for _, value in row.iteritems() %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    <form action="{{ url_for('camadas') }}" method="get">
+      <button type="submit">Voltar</button>
+    </form>
+  
+</body>
+</html>

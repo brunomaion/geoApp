@@ -85,6 +85,9 @@ def upload_file():
 
         if uploaded_file:
             tipo_column = request.form['opcSelect']
+            tipo_sep = request.form['opcSep']
+            
+            nomeCamada = request.form['nomeCamada']
             main_column = request.form['mainColumn']
             latitude_column = request.form['latitudeColumn']
             longitude_column = request.form['longitudeColumn']
@@ -94,8 +97,8 @@ def upload_file():
             uploaded_file.save(destination)
 
             minha_camada = Camada(tipo=tipo_column, 
-                                  nome=filename, 
-                                  dfx=pd.read_csv("Dados/" + filename, sep=';', encoding='latin-1'), 
+                                  nome=nomeCamada, 
+                                  dfx=pd.read_csv("Dados/" + filename, sep=tipo_sep, encoding='latin-1'), 
                                   xNome=main_column, 
                                   yLat=latitude_column, 
                                   zLong=longitude_column)
@@ -104,6 +107,7 @@ def upload_file():
 
             # Processamento necessário com as informações do arquivo e das colunas
             message = "Arquivo enviado e colunas processadas com sucesso."
+            print(tipo_sep)
             return render_template('camada.html', vetCamadas=vetCamadas, message=message)
 
     return render_template('camada.html', vetCamadas=vetCamadas)
@@ -133,24 +137,33 @@ def save_map():
     cordenadasIniciais = (latitude_inicial, longitude_inicial)
     m = folium.Map(location=cordenadasIniciais, zoom_start=12, tiles=estilo_inicial)
 
+
     for camada in vetCamadas:
-        if camada.tipo == 1: #TEXTO
-            print(camada.tipo)
+        if camada.tipo == 'Texto': #TEXTO
+            marker_group = folium.FeatureGroup(name=camada.nome, show=False)   
+            for index, row in (camada.dfx).iterrows():
+                nome = row[camada.xNome]
+                lat = float(row[camada.yLat])
+                lon = float(row[camada.zLong])
+                icon_html = f"""<div style="font-family: courier new; color: black; font-weight: bold; font-size: 10px;">{nome}</div>"""
+                icon = folium.DivIcon(html=icon_html)
+                folium.Marker(location=((lat+.001), (lon-.002)), icon=icon).add_to(marker_group)
 
 
+            marker_group.add_to(m)
 
-        if camada.tipo == 2: #MARCADOR
+        if camada.tipo == 'Marcador': #MARCADOR
             marker_group = folium.FeatureGroup(name=camada.nome, show=False)
             for index, row in (camada.dfx).iterrows():
                 nome = row[camada.xNome]
-                lat = row[camada.ylat]
-                lon = row[camada.zlon]
+                lat = float(row[camada.yLat])
+                lon = float(row[camada.zLong])
                 popup_text = f"{nome}"
                 folium.Marker(location=((lat+.001), (lon-.002)), popup=popup_text).add_to(marker_group)
 
             marker_group.add_to(m)
 
-
+    folium.LayerControl().add_to(m)
 
 
     
@@ -178,12 +191,12 @@ def limpar_dados():
     # Limpar o vetor de camadas
     vetCamadas.clear()
 
-    return render_template('homepage.html')
+    return render_template('camada.html', vetCamadas=vetCamadas)
 
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
 
 
