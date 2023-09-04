@@ -5,7 +5,8 @@ import pandas as pd
 import shutil
 import io
 from PIL import Image
-
+import time
+from selenium import webdriver
 ############# VARIAVIES 
 
 latitude_inicial = -24.99
@@ -99,7 +100,7 @@ def upload_file():
 
             minha_camada = Camada(tipo=tipo_column, 
                                   nome=nomeCamada, 
-                                  dfx=pd.read_csv("Dados/" + filename, sep=tipo_sep, encoding='latin-1'), 
+                                  dfx=pd.read_csv("Dados/" + filename, sep=tipo_sep), 
                                   xNome=main_column, 
                                   yLat=latitude_column, 
                                   zLong=longitude_column)
@@ -168,6 +169,9 @@ def create_map(filename, zoom_inicial):
 def save_map_or_image():
     zoom_inicial = request.form.get('zoomInicial', type=int)
     filename = request.form.get('filename', 'map.html')
+   
+    if not filename.endswith('.html'):
+        filename += '.html'
     download_type = request.form.get('download_type')
 
     if download_type == 'Baixar HTML':
@@ -181,21 +185,19 @@ def save_map_or_image():
         return send_file(arquivo_temporario, as_attachment=True)
     
     if download_type == 'Baixar Imagem':
-        m = create_map(filename, zoom_inicial)
-        # Defina o nome do arquivo temporário
-        arquivo_temporario = f'{filename}.jpeg'
-        # Salvar o mapa como uma imagem JPEG
-        img_data = m._to_png()
-        
-        # Crie uma imagem PIL a partir dos dados do mapa
-        image = Image.open(io.BytesIO(img_data))
-        
-        # Salve a imagem como arquivo JPEG usando o nome do arquivo temporário
-        image.save(arquivo_temporario, "JPEG")
-        
-        return send_file(arquivo_temporario, as_attachment=True)
 
+        delay=5
+        fn='Teste.html'
+        tmpurl='Teste.html'.format(path=os.getcwd(),mapfile=fn)
+        m.save(fn)
 
+        browser = webdriver.Firefox()
+        browser.get(tmpurl)
+        #Give the map tiles some time to load
+        time.sleep(delay)
+        browser.save_screenshot('map.png')
+        browser.quit()
+        
 
 @app.route('/limpar_dados', methods=['GET'])
 def limpar_dados():
