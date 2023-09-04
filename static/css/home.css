@@ -1,0 +1,52 @@
+/* home.css */
+
+/* Defina estilos para o corpo da página */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: transparent; /* Torna o fundo transparente */
+}
+
+/* Estilos para a seção de logos */
+.logos {
+  display: flex; /* Use flexbox para criar um layout de duas colunas */
+  justify-content: center; /* Centralize os elementos horizontalmente */
+  align-items: center; /* Centralize os elementos verticalmente */
+  padding: 20px; /* Adicione algum espaço ao redor das logos */
+}
+
+/* Estilos para cada logo */
+.logo {
+  text-align: center;
+  margin: 10px; /* Adicione espaço entre as logos */
+}
+
+.logo img {
+  max-width: 100%; /* Certifica-se de que as imagens se ajustem à largura da tela */
+}
+
+/* Estilos para o conteúdo da página */
+.content {
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #0d9250;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 194, 194, 0.2);
+  text-align: center; /* Centralize o conteúdo horizontalmente */
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #555; /* Mudar a cor de fundo quando passar o mouse */
+}

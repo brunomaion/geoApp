@@ -3,7 +3,8 @@ import folium
 import os
 import pandas as pd
 import shutil
-
+import io
+from PIL import Image
 
 ############# VARIAVIES 
 
@@ -127,16 +128,11 @@ def mostrar_camada(camada_nome):
 def saveMapa():
     return render_template('saveMap.html')
 
-@app.route('/save_map', methods=['POST'])
-def save_map():
 
-    filename = request.form['filename']
-    if not filename.endswith('.html'):
-        filename += '.html'
+def create_map(filename, zoom_inicial):
     
     cordenadasIniciais = (latitude_inicial, longitude_inicial)
-    m = folium.Map(location=cordenadasIniciais, zoom_start=12, tiles=estilo_inicial)
-
+    m = folium.Map(location=cordenadasIniciais, zoom_start=zoom_inicial, tiles=estilo_inicial)
 
     for camada in vetCamadas:
         if camada.tipo == 'Texto': #TEXTO
@@ -165,16 +161,41 @@ def save_map():
 
     folium.LayerControl().add_to(m)
 
+    return m
 
+
+@app.route('/save_map_or_image', methods=['POST'])
+def save_map_or_image():
+    zoom_inicial = request.form.get('zoomInicial', type=int)
+    filename = request.form.get('filename', 'map.html')
+    download_type = request.form.get('download_type')
+
+    if download_type == 'Baixar HTML':
+        m = create_map(filename, zoom_inicial)
+        arquivo_temporario = f'{filename}'
+        
+        # Salvar o mapa no arquivo temporário
+        m.save(arquivo_temporario)
+        
+        # Enviar o arquivo temporário como um anexo
+        return send_file(arquivo_temporario, as_attachment=True)
     
-    # Definir o nome do arquivo temporário
-    arquivo_temporario = f'{filename}'
-    
-    # Salvar o mapa no arquivo temporário
-    m.save(arquivo_temporario)
-    
-    # Enviar o arquivo temporário como um anexo
-    return send_file(arquivo_temporario, as_attachment=True)
+    if download_type == 'Baixar Imagem':
+        m = create_map(filename, zoom_inicial)
+        # Defina o nome do arquivo temporário
+        arquivo_temporario = f'{filename}.jpeg'
+        # Salvar o mapa como uma imagem JPEG
+        img_data = m._to_png()
+        
+        # Crie uma imagem PIL a partir dos dados do mapa
+        image = Image.open(io.BytesIO(img_data))
+        
+        # Salve a imagem como arquivo JPEG usando o nome do arquivo temporário
+        image.save(arquivo_temporario, "JPEG")
+        
+        return send_file(arquivo_temporario, as_attachment=True)
+
+
 
 @app.route('/limpar_dados', methods=['GET'])
 def limpar_dados():
