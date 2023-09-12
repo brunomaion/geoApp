@@ -44,6 +44,11 @@
             </tbody>
         </table>
     
+        <div class = "content">
+            <form action="{{ url_for('botaoAdd', camada_nome=camada.nome) }}" method="post">
+                <button class="back-button" type="submit">Print</button>
+            </form>            
+        </div>
     
         <div class = "content">
             <form action="{{ url_for('camadas') }}" method="get">

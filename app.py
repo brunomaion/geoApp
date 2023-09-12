@@ -115,14 +115,23 @@ def upload_file():
     return render_template('camada.html', vetCamadas=vetCamadas)
 
 
-@app.route('/camada/<camada_nome>')
+@app.route('/camada/<camada_nome>', methods=['GET', 'POST'])
 def mostrar_camada(camada_nome):
     # Encontre o objeto Camada correspondente ao nome clicado
     camada = next((c for c in vetCamadas if c.nome == camada_nome), None)
+    
     if camada:
         return render_template('opcoes_camada.html', camada=camada)
     else:
         return "Camada não encontrada."
+    
+@app.route('/botaoAdd/<camada_nome>', methods=['POST'])
+def botaoAdd(camada_nome):
+    # O código que você deseja executar quando o botão "Print" for pressionado
+    print('Funcionou')
+    return mostrar_camada(camada_nome)
+
+
 
 
 @app.route('/SalvarMapa')
