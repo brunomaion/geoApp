@@ -46,7 +46,11 @@
     
         <div class = "content">
             <form action="{{ url_for('botaoAdd', camada_nome=camada.nome) }}" method="post">
-                <button class="back-button" type="submit">Print</button>
+                <h2>Adicionar texto à coluna principal</h2>
+                <label for="column">Coluna:</label>
+                <input type="text" id="column" name="column">
+
+                <button class="back-button" type="submit">Adicionar Coluna</button>
             </form>            
         </div>
     

@@ -2,11 +2,8 @@ from flask import Flask, render_template, request, send_file
 import folium
 import os
 import pandas as pd
-import shutil
-import io
-from PIL import Image
-import time
-from selenium import webdriver
+
+
 ############# VARIAVIES 
 
 latitude_inicial = -24.99
@@ -127,8 +124,15 @@ def mostrar_camada(camada_nome):
     
 @app.route('/botaoAdd/<camada_nome>', methods=['POST'])
 def botaoAdd(camada_nome):
-    # O código que você deseja executar quando o botão "Print" for pressionado
-    print('Funcionou')
+    colunaAdd = request.form.get('column')
+
+    print(colunaAdd)
+    print(camada_nome)
+
+    camada = next((c for c in vetCamadas if c.nome == camada_nome), None)
+    camada.dfx[camada.xNome]  += ' '
+    camada.dfx[camada.xNome]  += (camada.dfx[colunaAdd]).astype(str)
+
     return mostrar_camada(camada_nome)
 
 
@@ -143,6 +147,38 @@ def create_map(filename, zoom_inicial):
     
     cordenadasIniciais = (latitude_inicial, longitude_inicial)
     m = folium.Map(location=cordenadasIniciais, zoom_start=zoom_inicial, tiles=estilo_inicial)
+
+    # Lista de cores predefinidas
+    colors = [
+        "#d6616b", "#e7ba52", "#9c9ede", "#cedb9c", "#e7969c", "#7b4173",
+        "#a55194", "#637939", "#a55194", "#ff7f0e", "#2ca02c", "#d62728",
+        "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b",
+        "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#aec7e8", "#ffbb78",
+        "#98df8a", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7",
+        "#dbdb8d", "#9edae5", "#ad494a", "#8c6d31", "#843c39", "#b5cf6b",
+        "#17becf", "#aec7e8", "#ffbb78", "#98df8a", "#ff9896"
+    ]
+
+    # Pasta contendo os arquivos GeoJSON
+    geojson_folder = "geoJsonBairros"
+    geojson_group = folium.FeatureGroup(name="geoBairros", show=False)
+
+    # Iterar pelos arquivos GeoJSON na pasta
+    for filename in os.listdir(geojson_folder):
+        if filename.endswith(".geojson"):
+            filepath = os.path.join(geojson_folder, filename)
+            if colors:
+                color = colors.pop(0)
+                folium.GeoJson(filepath, name=filename, style_function=lambda x, color=color: {
+                    "fillColor": color,
+                    "fillOpacity": 0.9,
+                    "color": "none"
+                }).add_to(geojson_group)
+
+    # Adicionar o FeatureGroup ao mapa
+    geojson_group.add_to(m)
+
+
 
     for camada in vetCamadas:
         if camada.tipo == 'Texto': #TEXTO
@@ -169,6 +205,11 @@ def create_map(filename, zoom_inicial):
 
             marker_group.add_to(m)
 
+    # Adicionar tiles diferentes ao mapa
+    folium.TileLayer("OpenStreetMap").add_to(m)  # Adicionar OpenStreetMap
+    folium.TileLayer("CartoDB positron").add_to(m)  # Adicionar CartoDB Positron
+    folium.TileLayer("Stamen Terrain").add_to(m)  # Adicionar Stamen Terrain
+
     folium.LayerControl().add_to(m)
 
     return m
@@ -193,19 +234,6 @@ def save_map_or_image():
         # Enviar o arquivo temporário como um anexo
         return send_file(arquivo_temporario, as_attachment=True)
     
-    if download_type == 'Baixar Imagem':
-
-        delay=5
-        fn='Teste.html'
-        tmpurl='Teste.html'.format(path=os.getcwd(),mapfile=fn)
-        m.save(fn)
-
-        browser = webdriver.Firefox()
-        browser.get(tmpurl)
-        #Give the map tiles some time to load
-        time.sleep(delay)
-        browser.save_screenshot('map.png')
-        browser.quit()
         
 
 @app.route('/limpar_dados', methods=['GET'])
@@ -227,9 +255,32 @@ def limpar_dados():
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+import tkinter as tk
+from flask import Flask, render_template
 
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello, Flask in a Desktop Window!'
+
+def run_flask():
+    app.run()
+
+def create_desktop_window():
+    root = tk.Tk()
+    root.title("Flask Desktop App")
+
+    label = tk.Label(root, text="Welcome to Flask Desktop App")
+    label.pack(padx=20, pady=20)
+
+    start_button = tk.Button(root, text="Start Flask", command=run_flask)
+    start_button.pack()
+
+    root.mainloop()
+
+if __name__ == '__main__':
+    create_desktop_window()
 
 
 

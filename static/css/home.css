@@ -22,8 +22,16 @@ body {
   margin: 10px; /* Adicione espaço entre as logos */
 }
 
+/* Estilos para a imagem do logo */
 .logo img {
-  max-width: 100%; /* Certifica-se de que as imagens se ajustem à largura da tela */
+  max-width: 70%; /* Reduza o tamanho da imagem para 70% do tamanho original */
+  transform: scale(0.7); /* Diminua o tamanho da imagem em 30% usando escala */
+  transition: transform 0.3s ease; /* Adicione uma transição suave para a animação */
+}
+
+/* Adicione um efeito de zoom suave quando passar o mouse sobre a imagem do logo */
+.logo img:hover {
+  transform: scale(1); /* Aumente o tamanho da imagem de volta ao tamanho original */
 }
 
 /* Estilos para o conteúdo da página */
